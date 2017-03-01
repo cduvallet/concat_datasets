@@ -70,4 +70,7 @@ The `download_and_process_datasets.sh` script calls the other two Python scripts
 * `manipulate_metadata_files.py` reads through all the metadata files, checks if there are duplicate 
 sample IDs, concatenates all the metadata files, and writes that metadata to `data/for_pipeline`.
 
- 
+# To do
+
+* Re-write bash and python scripts in a [drake](https://github.com/Factual/drake) workflow (or something similar?)
+* Make code less dependent on current directory/AWS set up
