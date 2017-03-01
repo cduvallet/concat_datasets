@@ -21,7 +21,7 @@ Eric's batch effects business.
 7. Process the concatenated raw_trimmed as if it were its own dataset, starting from RAW_FASTA_FILE
    - need to make sure that there aren't any duplicate sample IDs
 8. ???
-9. Fix batch effects. Profit.
+9. Estimate population from sewage. Fix batch effects. Profit.
 
 # Processing parameters
 
@@ -56,6 +56,7 @@ Just run `./download_and_process_datasets.sh S3_V4_datasets.txt` and make sure y
 `master_summary_file.txt` to `data/for_pipeline`.
 
 The `download_and_process_datasets.sh` script:
+
 1. downloads each dataset from S3   
 1. updates its summary file with the right parameters   
 1. processes it through the pipeline   
