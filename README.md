@@ -16,12 +16,12 @@ Eric's batch effects business.
    - I think modify it, yeah!
 4. Process the dataset
 5. Grab relevant files...
-   - raw_trimmed.fasta
-6. Concatenate the raw_trimmed fastas
-7. Process the concatenated raw_trimmed as if it were its own dataset, starting from RAW_FASTA_FILE
-   - need to make sure that there aren't any duplicate sample IDs
+   - raw_dereplicated.fasta
+   - dereplication map
+6. Concatenate the raw_dereplicated fastas
+7. See how big that file is. Hopefully less that 4 G. If not... dereplicate that again!?!
 8. ???
-9. Estimate population from sewage. Fix batch effects. Profit.
+9. Fix batch effects. Profit.
 
 # Processing parameters
 
@@ -44,9 +44,9 @@ The minimum trim length was 150.
 1 was split by barcodes and had primers removed (t1d_mejialeon)
 
 ## Plan
-So, I think we should:  
-* use max expected errors = 2  
-* trim length = 150  
+So, I think we should:
+use max expected errors = 2
+trim length = 150
 
 And while we're at it let's make min count = 10 again
 
@@ -56,21 +56,23 @@ Just run `./download_and_process_datasets.sh S3_V4_datasets.txt` and make sure y
 `master_summary_file.txt` to `data/for_pipeline`.
 
 The `download_and_process_datasets.sh` script:
-
-1. downloads each dataset from S3   
-1. updates its summary file with the right parameters   
-1. processes it through the pipeline   
-1. copies the resulting `*.raw_trimmed.fasta` to `data/raw_trimmed/`   
-1. also downloads the corresponding metadata from the `almlab` bucket, puts it in `data/metadata/`   
-1. concatenates all of the `raw_trimmed` fasta files into `data/for_pipeline/`   
-1. and finally, concatenates all of the metadata files, also into `data/for_pipeline/`   
+1. downloads each dataset from S3
+1. updates its summary file with the right parameters
+1. processes it through the pipeline
+1. copies the resulting `*.raw_trimmed.fasta` to `data/raw_trimmed/`
+1. also downloads the corresponding metadata from the `almlab` bucket, puts it in `data/metadata/`
+1. concatenates all of the metadata files, into `data/for_pipeline/`
+1. dereplicates each raw_trimmed file into a raw_dereplicated file, in `data/derep_data/`
+   - this uses the default `min_count = 10`, i.e. throws out sequences which had fewer than 10 reads in each dataset
+1. concatenates all of the `raw_trimmed` fastas into `data/derep_data/dereped_datasets_concated.raw_trimmed.fasta`
+1. re-dereplicates this file into `data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta`
+   - this dereplication step uses `min_count = 1`, i.e. it was in at least one dataset
+1. reorders and relabels the sequence IDs according to total size across all studies in `data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta.relabeled_and_sorted`
+1. clusters this super de-replicated fasta with usearch
 
 The `download_and_process_datasets.sh` script calls the other two Python scripts:
 * `update_summary_file.py` updates a dataset's summary file with the processing parameters (as above)
 * `manipulate_metadata_files.py` reads through all the metadata files, checks if there are duplicate 
 sample IDs, concatenates all the metadata files, and writes that metadata to `data/for_pipeline`.
 
-# To do
-
-* Re-write bash and python scripts in a [drake](https://github.com/Factual/drake) workflow (or something similar?)
-* Make code less dependent on current directory/AWS set up
+ 

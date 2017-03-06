@@ -1,7 +1,7 @@
 DATASET_ID	all_v4
 
 #16S_start
-RAW_FASTA_FILE	S3_datasets.all_raw_trimmed.fasta
+RAW_FASTA_FILE	S3_V4_datasets.all_raw_trimmed.fasta
 PRIMERS_FILE	None
 BARCODES_MAP	None
 BARCODES_SEPARATOR	_

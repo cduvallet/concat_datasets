@@ -60,16 +60,40 @@ do
     rm tmp_data/*
 done < $1
 
-## Concatenate all of the raw_trimmed.fasta files
-cat data/raw_trimmed/* > data/for_pipeline/${1%.txt}.all_raw_trimmed.fasta
+### Concatenate all of the raw_trimmed.fasta files
+#cat data/raw_trimmed/* > data/for_pipeline/${1%.txt}.all_raw_trimmed.fasta
 
 ## Concatenate all the metadata and add dataset_id column
 # Also check that there are no duplicate sample IDs.
 # If there are duplicate IDs, this code just prints that to screen and keeps going...
 python manipulate_metadata_files.py data/metadata/ data/for_pipeline/ ${1%.txt}.all_metadata.txt
 
-## Dereplicate that huge raw_trimmed.fasta file
-## Or maybe just run it through the pipeline??
-python ~/scripts/Master.py -i ~/users/duvallet/pop_study_data/data/for_pipeline/
+### Dereplicate that huge raw_trimmed.fasta file
+### Or maybe just run it through the pipeline??
+#python ~/scripts/Master.py -i ~/users/duvallet/pop_study_data/data/for_pipeline/
 
+## Dereplicate each dataset individually
+python dereplicate_individual_datasets.py -d -l data/raw_trimmed/ data/derep_data/
 
+## Concatenate all the relabeled raw_dereplicated files
+cat data/derep_data/*.raw_dereplicated.fasta.relabeled > data/derep_data/dereped_datasets_concated.raw_trimmed.fasta
+
+## Dereplicate the concatenated dereplicated files
+raw_trimmed=data/derep_data/dereped_datasets_concated.raw_trimmed.fasta
+derep_map=data/derep_data/dereped_datasets_concated.map
+derep_fasta=data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta
+proc_summary=data/derep_data/dereped_datasets_concated.proc_summary.txt
+python ~/scripts/3.dereplicate.py -f $raw_trimmed -s _ -o $derep_map -d $derep_fasta -P $proc_summary -M 1
+
+# Update the re-dereplicated concatenated file with total sequence size
+# And write in descending size order (bc that's what usearch wants)
+map_in=data/derep_data/dereped_datasets_concated.map
+fasta_in=data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta
+fasta_out=data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta.relabled_and_sorted
+python re_provenance_files.py $map_in $fasta_in $fasta_out
+
+## Cluster the doubly-dereplicated fasta with usearch
+fasta_in=$fasta_out
+otu_seqs_fasta=data/derep_data/dereped_datasets_concated.otu_seqs.fasta
+clustering_results=data/derep_data/dereped_datasets_concated.clustering_results.tab
+usearch8 -cluster_otus $fasta_in -otus $otu_seqs_fasta -otu_radius_pct 0.97 -sizein -uparseout $clustering_results
