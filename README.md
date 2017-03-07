@@ -63,10 +63,10 @@ The `download_and_process_datasets.sh` script:
 1. also downloads the corresponding metadata from the `almlab` bucket, puts it in `data/metadata/`
 1. concatenates all of the metadata files, into `data/for_pipeline/`
 1. dereplicates each raw_trimmed file into a raw_dereplicated file, in `data/derep_data/`
-   - this uses the default `min_count = 10`, i.e. throws out sequences which had fewer than 10 reads in each dataset
+   1. this uses the default `min_count = 10`, i.e. throws out sequences which had fewer than 10 reads in each dataset
 1. concatenates all of the `raw_trimmed` fastas into `data/derep_data/dereped_datasets_concated.raw_trimmed.fasta`
 1. re-dereplicates this file into `data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta`
-   - this dereplication step uses `min_count = 1`, i.e. it was in at least one dataset
+   1. this dereplication step uses `min_count = 1`, i.e. it was in at least one dataset
 1. reorders and relabels the sequence IDs according to total size across all studies in `data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta.relabeled_and_sorted`
 1. clusters this super de-replicated fasta with usearch
 
@@ -74,5 +74,9 @@ The `download_and_process_datasets.sh` script calls the other two Python scripts
 * `update_summary_file.py` updates a dataset's summary file with the processing parameters (as above)
 * `manipulate_metadata_files.py` reads through all the metadata files, checks if there are duplicate 
 sample IDs, concatenates all the metadata files, and writes that metadata to `data/for_pipeline`.
-
+* `dereplicate_individual_datasets.py` reads all the `*.raw_trimmed.fasta` files in `data/raw_trimmed/`
+and dereplicates them with `3.dereplicate.py`. It also relabels output files for downstream steps.
+All outputs go in `data/derep_data/`.
+* re_provenance_files.py reads through the re-dereplicated fasta and relabels and sorts sequences according
+to their total size. I should probably call this something different.
  
