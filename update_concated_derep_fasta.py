@@ -1,6 +1,9 @@
 """
-This file does a lot of provenancing business.
-
+This script takes in a dereplication map corresponding
+to the concatenated dataset (i.e. "samples" in this map
+are actually original sequences from individual datasets)
+and a corresponding raw_dereplicated fasta and updates
+the fasta with the correct sizes.
 """
 
 import argparse
