@@ -56,6 +56,7 @@ Just run `./download_and_process_datasets.sh S3_V4_datasets.txt` and make sure y
 `master_summary_file.txt` to `data/for_pipeline`.
 
 The `download_and_process_datasets.sh` script:
+
 1. downloads each dataset from S3
 1. updates its summary file with the right parameters
 1. processes it through the pipeline
