@@ -227,6 +227,7 @@ if __name__ == "__main__":
     parser.add_argument('cluster_file', help='path to cluster_results.tab file')
     parser.add_argument('derep_map', help='dereplication map, indicating which datasets each of the sequences in cluster_file were found in')
     parser.add_argument('derep_dir', help='directory with dataset-wise dereplication maps, labeled datasetID.map')
+    parser.add_argument('table_out', help='file name for output OTU table')
     args = parser.parse_args()
         
     ## Parse clustering results to {seqID: OTU_ID}
@@ -253,7 +254,6 @@ if __name__ == "__main__":
     print("Collapsing..."),
     finaldict = {}
     for otu in derepOTUdict:
-        print(otu),
         for dataset in derepOTUdict[otu]:
             try:
                 finaldict[otu].update(collapse_derep_map(dataset, 
@@ -264,7 +264,7 @@ if __name__ == "__main__":
                                                      derepOTUdict[otu][dataset], # [list_of_orig_IDS]
                                                      dataset_maps[dataset])) # {seq: {s1: counts, s2: counts}}
 
-
+    # This takes a long time. Is there a better way to save this final dict??
     df = pd.DataFrame.from_dict(finaldict)
-    df.to_csv('test_df.txt', sep='\t')
+    df.to_csv(args.table_out, sep='\t')
 
