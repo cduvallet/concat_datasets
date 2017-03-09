@@ -93,7 +93,7 @@ fi
 ## Concatenate all the relabeled raw_dereplicated files
 concat_dir=data/derep_concat
 concat_trimmed=${concat_dir}/dereped_datasets_concated.raw_trimmed.fasta
-cat $(find ${derep_dir}/*.raw_dereplicated.fasta) > $concat_trimmed
+cat $(find ${derep_dir}/*.raw_dereplicated.fasta.relabeled) > $concat_trimmed
 
 ## Dereplicate the concatenated dereplicated files
 # TODO: add flag or variable to change min_count here (i.e. min # of datasets)

@@ -70,6 +70,7 @@ The `download_and_process_datasets.sh` script:
    1. this dereplication step uses `min_count = 1`, i.e. it was in at least one dataset
 1. reorders and relabels the sequence IDs according to total size across all studies in `data/derep_data/dereped_datasets_concated.raw_dereplicated.fasta.relabeled_and_sorted`
 1. clusters this super de-replicated fasta with usearch
+1. makes OTU table by mapping OTUs back to sequences back to original sequences in datasets
 
 The `download_and_process_datasets.sh` script calls the other two Python scripts:
 * `update_summary_file.py` updates a dataset's summary file with the processing parameters (as above)
@@ -78,6 +79,13 @@ sample IDs, concatenates all the metadata files, and writes that metadata to `da
 * `dereplicate_individual_datasets.py` reads all the `*.raw_trimmed.fasta` files in `data/raw_trimmed/`
 and dereplicates them with `3.dereplicate.py`. It also relabels output files for downstream steps.
 All outputs go in `data/derep_data/`.
-* re_provenance_files.py reads through the re-dereplicated fasta and relabels and sorts sequences according
+* `re_provenance_files.py` reads through the re-dereplicated fasta and relabels and sorts sequences according
 to their total size. I should probably call this something different.
- 
+
+# Alternate option
+
+You can also concatenate all of the `*.raw_trimmed.fasta` files into one massive `raw_trimmed.fasta`.
+If you use a larger cutoff for `MIN_COUNT` (e.g. `MIN_COUNT = 50`), this file can be directly run
+through the pipeline (with `RAW_FASTA_FILE` input).
+
+An example summary file is in `data/for_pipeline`.
