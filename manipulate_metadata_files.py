@@ -24,7 +24,9 @@ all_samples = {}
 for f in files:
     df = pd.read_csv(os.path.join(args.in_dir, f), sep='\t', index_col=0)
     # metadata files are named dataset_id.metadata.txt
-    df['dataset_id'] = f.split('.')[0]
+    dataset = f.split('.')[0]
+    df['dataset_id'] = dataset
+    df.index = [dataset + '--' + str(i) for i in df.index]
     all_samples[f.split('.')[0]] = list(df.index)
     all_metas.append(df)
 

@@ -89,3 +89,10 @@ If you use a larger cutoff for `MIN_COUNT` (e.g. `MIN_COUNT = 50`), this file ca
 through the pipeline (with `RAW_FASTA_FILE` input).
 
 An example summary file is in `data/for_pipeline`.
+
+# A note on metadata
+
+Some samples have 16S data but no metadata. Some samples have metadata but no 16S data.
+These results are *not* corrected for these discrepancies (i.e. there are ~2115 samples
+with metadata, 2418 with 16S data, but only ~2086 with both).
+
