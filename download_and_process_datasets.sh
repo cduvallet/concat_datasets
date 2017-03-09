@@ -135,9 +135,14 @@ if [ "$derep_proc" == 'True']; then
 fi
 
 if [ "$pipeline_proc" == 'True']; then
+    ## Relabel sample IDs in the raw_trimmed files to be datasetID--sampleID_N
+    echo -e "Relabeling raw_trimmed.fasta files"
+    trimmed_dir=data/raw_trimmed
+    python relabel_raw_trimmed.py $trimmed_dir
+
     ## Concatenate all of the raw_trimmed.fasta files
     echo -e "Concatenating all of the *raw_trimmed.fasta* files"
-    cat data/raw_trimmed/* > data/for_pipeline/all_raw_trimmed.fasta
+    cat data/raw_trimmed/*.raw_trimmed.relabeled > data/for_pipeline/all_raw_trimmed.fasta
 
     ## Dereplicate that huge raw_trimmed.fasta file
     echo -e "Running the concatenated raw_trimmed file through pipeline"
