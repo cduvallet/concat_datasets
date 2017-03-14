@@ -40,4 +40,9 @@ for d1 in datasets:
 
 # Concatenate all metadata and write to file
 all_metas_df = pd.concat(all_metas)
+
+# Rename the index to match what will be in the pipeline OTU table
+all_metas_df.index = [''.join(i.split('_')) for i in all_metas_df.index]
+
+# Write metadata file
 all_metas_df.to_csv(os.path.join(args.out_dir, args.out_file), sep='\t')
