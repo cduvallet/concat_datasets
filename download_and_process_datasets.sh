@@ -56,7 +56,7 @@ if [ "$download" != 'False' ]; then
     while read bucket;
     do
     	# Download data from S3
-    	aws s3 cp s3://mbit.storage.bucket1/${bucket} tmp_data/ --recursive
+    	aws s3 cp s3://mbit.storage.bucket1/${bucket} tmp_data/ --recursive --quiet
 
     	# Download summary file from almlab S3
     	aws s3 cp s3://almlab.bucket/duvallet/summary_files/${bucket}.summary_file.txt tmp_data/summary_file.txt
@@ -66,7 +66,7 @@ if [ "$download" != 'False' ]; then
     	dataset=$(cut -f 2 tmp_data/summary_file.txt | head -n 1)
 	
     	# Run Master.py
-    	python ~/scripts/Master.py -i ~/users/duvallet/pop_study_data/tmp_data/
+    	python ~/scripts/Master.py -i ~/users/duvallet/concat_datasets/tmp_data/
 
     	# Move raw_trimmed.fasta and summary file somewhere safe
     	mv ~/proc/${dataset}_proc_16S/${dataset}.raw_trimmed.fasta data/raw_trimmed/
@@ -98,7 +98,7 @@ if [ "$derepall" != 'False' ]; then
     python dereplicate_individual_datasets.py -d -l $trimmed_dir $derep_dir
 fi
 
-if [ "$derep_proc" == 'True']; then
+if [ "$derep_proc" == 'True' ]; then
     ## Concatenate all the relabeled raw_dereplicated files
     echo -e "Concatenating individual raw_dereplicate fasta files..."
     concat_dir=data/derep_concat
@@ -134,17 +134,17 @@ if [ "$derep_proc" == 'True']; then
     python reprovenance_all_files.py $clustering_results $derep_map $derep_dir $otu_table
 fi
 
-if [ "$pipeline_proc" == 'True']; then
+if [ "$pipeline_proc" == 'True' ]; then
     ## Relabel sample IDs in the raw_trimmed files to be datasetID--sampleID_N
     echo -e "Relabeling raw_trimmed.fasta files"
     trimmed_dir=data/raw_trimmed
     python relabel_raw_trimmed.py $trimmed_dir
 
     ## Concatenate all of the raw_trimmed.fasta files
-    echo -e "Concatenating all of the *raw_trimmed.fasta* files"
-    cat data/raw_trimmed/*.raw_trimmed.relabeled > data/for_pipeline/all_raw_trimmed.fasta
+    echo -e "Concatenating all of the *raw_trimmed.fasta.relabeled files"
+    cat data/raw_trimmed/*.raw_trimmed.fasta.relabeled > data/for_pipeline/all_raw_trimmed.fasta
 
     ## Dereplicate that huge raw_trimmed.fasta file
     echo -e "Running the concatenated raw_trimmed file through pipeline"
-    python ~/scripts/Master.py -i ~/users/duvallet/pop_study_data/data/for_pipeline/
+    python ~/scripts/Master.py -i ~/users/duvallet/concat_datasets/data/for_pipeline/
 fi
